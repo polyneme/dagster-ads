@@ -1,19 +1,21 @@
 # dagster_ads
 
-This is a [Dagster](https://dagster.io/) project scaffolded with [`dagster project scaffold`](https://docs.dagster.io/getting-started/create-new-project).
+Dagster code location for Astrophysics Data System (ADS) software-defined assets.
+
+Initialized as a [Dagster](https://dagster.io/) project scaffolded with [`dagster project scaffold`](https://docs.dagster.io/getting-started/create-new-project).
 
 ## Getting started
 
-First, install your Dagster code location as a Python package. By using the --editable flag, pip will install your Python package in ["editable mode"](https://pip.pypa.io/en/latest/topics/local-project-installs/#editable-installs) so that as you develop, local code changes will automatically apply.
+First, install your Dagster code location as a Python package.
 
 ```bash
-pip install -e ".[dev]"
+make init
 ```
 
-Then, start the Dagster UI web server:
+Then, start the Dagster UI web server, e.g.
 
 ```bash
-dagster dev
+dagster dev -f dagster_ads/deployment.py
 ```
 
 Open http://localhost:3000 with your browser to see the project.
@@ -25,7 +27,9 @@ You can start writing assets in `dagster_ads/assets.py`. The assets are automati
 
 ### Adding new Python dependencies
 
-You can specify new Python dependencies in `setup.py`.
+You can specify new Python dependencies in `requirements.in` and `requirements.dev.in`.
+
+Then `make update`.
 
 ### Unit testing
 
@@ -40,9 +44,3 @@ pytest dagster_ads_tests
 If you want to enable Dagster [Schedules](https://docs.dagster.io/concepts/partitions-schedules-sensors/schedules) or [Sensors](https://docs.dagster.io/concepts/partitions-schedules-sensors/sensors) for your jobs, the [Dagster Daemon](https://docs.dagster.io/deployment/dagster-daemon) process must be running. This is done automatically when you run `dagster dev`.
 
 Once your Dagster Daemon is running, you can start turning on schedules and sensors for your jobs.
-
-## Deploy on Dagster Cloud
-
-The easiest way to deploy your Dagster project is to use Dagster Cloud.
-
-Check out the [Dagster Cloud Documentation](https://docs.dagster.cloud) to learn more.

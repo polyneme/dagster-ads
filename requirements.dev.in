@@ -1,0 +1,12 @@
+-c requirements.txt
+black
+coverage
+dagit
+flake8
+pip-tools
+pip
+pytest
+pytest-cov
+setuptools
+setuptools-scm
+twine
