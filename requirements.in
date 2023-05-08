@@ -1,5 +1,7 @@
 ads
 dagster
+dagster-aws
 dagster-postgres
 dagster-docker
 pandas
+tenacity

@@ -2,7 +2,16 @@ from typing import Iterable
 
 import ads
 import ads.config
-from dagster import ConfigurableResource
+import botocore
+import boto3
+from dagster import (
+    ConfigurableResource,
+    ConfigurableIOManager,
+    InputContext,
+    OutputContext,
+    ResourceDependency,
+)
+from dagster_aws.s3 import S3Resource
 
 from dagster_ads.config import ADS_FIELDS
 
@@ -30,3 +39,41 @@ class ADSSearchQueryResource(ConfigurableResource):
             fl = ADS_FIELDS
 
         return ads.SearchQuery(q=q, fl=fl, rows=rows, max_pages=max_pages)
+
+
+class DO_S3_Resource(ConfigurableResource):
+    aws_access_key_id: str
+    aws_secret_access_key: str
+    region_name: str = "nyc3"
+    endpoint_url: str = "https://nyc3.digitaloceanspaces.com"
+
+    def get_client(self):
+        session = boto3.session.Session()
+        return session.client(
+            "s3",
+            config=botocore.config.Config(s3={"addressing_style": "virtual"}),
+            region_name=self.region_name,
+            endpoint_url=self.endpoint_url,
+            aws_access_key_id=self.aws_access_key_id,
+            aws_secret_access_key=self.aws_secret_access_key,
+        )
+
+
+class ADS_S3_ConfigurableIOManager(ConfigurableIOManager):
+    s3_resource: ResourceDependency[DO_S3_Resource]
+    s3_bucket: str
+
+    def _get_path(self, context) -> str:
+        return "/".join(["ads"] + context.asset_key.path)
+
+    def handle_output(self, context: OutputContext, obj):
+        self.s3_resource.get_client().put_object(
+            Bucket=self.s3_bucket, Key=self._get_path(context), Body=obj, ACL="private"
+        )
+
+    def load_input(self, context: InputContext):
+        return (
+            self.s3_resource.get_client()
+            .get_object(Bucket=self.s3_bucket, Key=self._get_path(context))["Body"]
+            .read()
+        )
