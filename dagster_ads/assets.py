@@ -16,8 +16,7 @@ from dagster_ads.resources import ADSSearchQueryResource, DO_S3_Resource
 def ads_records(
     context: OpExecutionContext, ads: ADSSearchQueryResource, s3: DO_S3_Resource
 ):
-    output = BytesIO()
-    count = 0
+    page = {"number": 1}
     cursor = ads.find(q="""*:*""", fl=ADS_FIELDS, rows=2000, max_pages=10_000)
 
     @retry(
@@ -25,6 +24,7 @@ def ads_records(
         wait=wait_random_exponential(multiplier=1, max=60),
     )
     def fetch_pages():
+        output = BytesIO()
         for i, record in enumerate(cursor):
             doc = dict(record.iteritems())
             output.write(f"{json.dumps(doc)}\n".encode(encoding="utf-8"))
@@ -35,28 +35,21 @@ def ads_records(
                 )
                 s3.get_client().put_object(
                     Bucket="polyneme",
-                    Key="ads/ads_records.ndjson.gz",
+                    Key=f"ads/ads_records.page{page['number']:05}.ndjson.gz",
                     Body=gzip.compress(output.getvalue()),
                     ACL="public-read",
-                    Metadata={"x-n-records": f"{i}"},
                 )
+                output = BytesIO()
+                page["number"] += 1
 
     fetch_pages()
     s3.get_client().put_object(
         Bucket="polyneme",
-        Key="ads/ads_records.ndjson.gz",
+        Key=f"ads/ads_records.page{page['number']:05}.ndjson.gz",
         Body=gzip.compress(output.getvalue()),
         ACL="public-read",
-        Metadata={"x-n-records": "all"},
     )
-    return Output(
-        value=gzip.compress(output.getvalue()),
-        metadata={
-            "path": MetadataValue.url(
-                "https://files.polyneme.xyz/ads/ads_records.ndjson.gz"
-            )
-        },
-    )
+    return Output(value="OK")
 
 
 assets = load_assets_from_current_module(
