@@ -1,6 +1,6 @@
 import os
 
-ADS_FIELDS = [
+ADS_FIELDS = (
     "id",
     "identifier",
     "bibcode",
@@ -16,7 +16,7 @@ ADS_FIELDS = [
     "keyword_schema",
     "keyword_norm",
     "institution",
-]
+)
 
 ADS_CONFIG_TOKEN = os.getenv("ADS_CONFIG_TOKEN")
 AWS_REGION_NAME = os.getenv("AWS_REGION_NAME")
