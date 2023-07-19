@@ -5,8 +5,14 @@ import json
 from io import BytesIO
 
 from ads.exceptions import APIResponseError
-from dagster import load_assets_from_current_module, OpExecutionContext
-from dagster import Output, asset, MetadataValue, Config
+from dagster import (
+    OpExecutionContext,
+    Output,
+    asset,
+    Config,
+    StaticPartitionsDefinition,
+)
+
 from tenacity import wait_random_exponential, retry, retry_if_exception_type
 
 from dagster_ads.config import ADS_FIELDS
@@ -14,25 +20,31 @@ from dagster_ads.resources import ADSSearchQueryResource, DO_S3_Resource
 
 
 class ADSRecordsConfig(Config):
-    query: str = """*:*"""
+    query: str = 'doi:"10.*"'
     fields: list[str] = list(ADS_FIELDS)
-    rows: int = 2000
+    rows: int = 2000  # Max supported by ADS API
     sort: str = "score desc,id desc"
-    max_pages: int = 10_000  # 10_000 to get all of ADS as of 2023-05-10
+    max_pages: int = 10_000  # Max supported by ADS API
 
 
-@asset(io_manager_key="ads_s3_io_manager")
+decades_partitions_def = StaticPartitionsDefinition(
+    [f"{y}-{y+10}" for y in range(1500, 2030, 10)]
+)
+
+
+@asset(io_manager_key="ads_s3_io_manager", partitions_def=decades_partitions_def)
 def ads_records(
     context: OpExecutionContext,
     config: ADSRecordsConfig,
     ads: ADSSearchQueryResource,
     s3: DO_S3_Resource,
 ):
+    partition_decade_str = context.asset_partition_key_for_output()
     starting_hour: str = datetime.utcnow().isoformat().split(":")[0]
     page = {"number": 1}
-    output = {"handle": None}
+    output = {"handle": BytesIO()}
     cursor = ads.find(
-        q=config.query,
+        q=f"{config.query} year:{partition_decade_str}",
         fl=config.fields,
         rows=config.rows,
         max_pages=config.max_pages,
@@ -54,7 +66,7 @@ def ads_records(
                 )
                 s3.get_client().put_object(
                     Bucket="polyneme",
-                    Key=f"ads/{starting_hour}/ads_records.page{page['number']:05}.ndjson.gz",
+                    Key=f"ads/records/{partition_decade_str}/{starting_hour}/.page{page['number']:05}.ndjson.gz",
                     Body=gzip.compress(output["handle"].getvalue()),
                     ACL="public-read",
                 )
@@ -64,7 +76,7 @@ def ads_records(
     fetch_pages()
     s3.get_client().put_object(
         Bucket="polyneme",
-        Key=f"ads/{starting_hour}/ads_records.page{page['number']:05}.ndjson.gz",
+        Key=f"ads/records/{partition_decade_str}/{starting_hour}/.page{page['number']:05}.ndjson.gz",
         Body=gzip.compress(output["handle"].getvalue()),
         ACL="public-read",
     )
