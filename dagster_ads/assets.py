@@ -28,7 +28,7 @@ class ADSRecordsConfig(Config):
 
 
 decades_partitions_def = StaticPartitionsDefinition(
-    [f"{y}-{y+10}" for y in range(1500, 2030, 10)]
+    [f"{y}-{y+9}" for y in range(1500, 2030, 10)]
 )
 
 
@@ -66,7 +66,7 @@ def ads_records(
                 )
                 s3.get_client().put_object(
                     Bucket="polyneme",
-                    Key=f"ads/records/{partition_decade_str}/{starting_hour}/.page{page['number']:05}.ndjson.gz",
+                    Key=f"ads/records/{partition_decade_str}/{starting_hour}/page{page['number']:05}.ndjson.gz",
                     Body=gzip.compress(output["handle"].getvalue()),
                     ACL="public-read",
                 )
@@ -76,7 +76,7 @@ def ads_records(
     fetch_pages()
     s3.get_client().put_object(
         Bucket="polyneme",
-        Key=f"ads/records/{partition_decade_str}/{starting_hour}/.page{page['number']:05}.ndjson.gz",
+        Key=f"ads/records/{partition_decade_str}/{starting_hour}/page{page['number']:05}.ndjson.gz",
         Body=gzip.compress(output["handle"].getvalue()),
         ACL="public-read",
     )
