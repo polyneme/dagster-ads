@@ -1,7 +1,7 @@
 from dagster import Definitions, define_asset_job, ScheduleDefinition
 from dagster_aws.s3 import S3Resource
 
-from dagster_ads.assets import ads_records
+from dagster_ads.assets import ads_records, ads_records_with_orcid
 from dagster_ads.config import (
     ADS_CONFIG_TOKEN,
     AWS_REGION_NAME,
@@ -30,7 +30,7 @@ ads_records_schedule = ScheduleDefinition(
 )
 
 defs = Definitions(
-    assets=[ads_records],
+    assets=[ads_records, ads_records_with_orcid],
     resources={
         "ads": ADSSearchQueryResource(config_token=ADS_CONFIG_TOKEN),
         "s3": configured_s3_resource,

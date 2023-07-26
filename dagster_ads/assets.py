@@ -81,3 +81,58 @@ def ads_records(
         ACL="public-read",
     )
     return Output(value="OK")
+
+
+@asset(io_manager_key="ads_s3_io_manager")
+def ads_records_with_orcid(
+    context: OpExecutionContext,
+    config: ADSRecordsConfig,
+    ads: ADSSearchQueryResource,
+    s3: DO_S3_Resource,
+):
+    starting_hour: str = datetime.utcnow().isoformat().split(":")[0]
+    page = {"number": 1}
+    output = {"handle": BytesIO()}
+    cursor = ads.find(
+        q=(
+            'doi:"10*" '
+            'AND (orcid:"0*" OR orcid:"1*" OR orcid:"2*" OR orcid:"3*" '
+            'OR orcid:"4*" OR orcid:"5*" OR orcid:"6*" OR orcid:"7*" '
+            'OR orcid:"8*" OR orcid:"9*")'
+        ),
+        fl=["bibcode", "doi", "orcid_other", "orcid_pub", "orcid_user"],
+        rows=config.rows,
+        max_pages=config.max_pages,
+    )
+
+    @retry(
+        retry=retry_if_exception_type(APIResponseError),
+        wait=wait_random_exponential(multiplier=1, max=60),
+    )
+    def fetch_pages():
+        output["handle"] = BytesIO()
+        for i, record in enumerate(cursor):
+            doc = dict(record.iteritems())
+            output["handle"].write(f"{json.dumps(doc)}\n".encode(encoding="utf-8"))
+            if i % config.rows == 0:
+                numerator, denominator = cursor.progress.split("/")
+                context.log.info(
+                    f"{cursor.progress} {int(numerator)/int(denominator):.3%}"
+                )
+                s3.get_client().put_object(
+                    Bucket="polyneme",
+                    Key=f"ads/records_with_orcid/{starting_hour}/page{page['number']:05}.ndjson.gz",
+                    Body=gzip.compress(output["handle"].getvalue()),
+                    ACL="public-read",
+                )
+                output["handle"] = BytesIO()
+                page["number"] += 1
+
+    fetch_pages()
+    s3.get_client().put_object(
+        Bucket="polyneme",
+        Key=f"ads/records_with_orcid/{starting_hour}/page{page['number']:05}.ndjson.gz",
+        Body=gzip.compress(output["handle"].getvalue()),
+        ACL="public-read",
+    )
+    return Output(value="OK")
