@@ -1,7 +1,7 @@
 ads
 dagster
+dagit
 dagster-aws
 dagster-postgres
-dagster-docker
 pandas
 tenacity

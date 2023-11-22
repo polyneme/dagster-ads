@@ -4,33 +4,35 @@
 #
 #    pip-compile --allow-unsafe --output-file=requirements.dev.txt --strip-extras requirements.dev.in
 #
-alembic==1.11.1
+alembic==1.12.1
     # via
     #   -c requirements.txt
     #   dagster
 aniso8601==9.0.1
     # via graphene
-anyio==3.7.1
+annotated-types==0.6.0
+    # via
+    #   -c requirements.txt
+    #   pydantic
+anyio==4.0.0
     # via
     #   starlette
     #   watchfiles
 backoff==2.2.1
     # via gql
-black==23.7.0
+black==23.11.0
     # via -r requirements.dev.in
-bleach==6.0.0
-    # via readme-renderer
-build==0.10.0
+build==1.0.3
     # via pip-tools
-certifi==2023.5.7
+certifi==2023.11.17
     # via
     #   -c requirements.txt
     #   requests
-charset-normalizer==3.2.0
+charset-normalizer==3.3.2
     # via
     #   -c requirements.txt
     #   requests
-click==8.1.6
+click==8.1.7
     # via
     #   -c requirements.txt
     #   black
@@ -42,24 +44,28 @@ coloredlogs==14.0
     # via
     #   -c requirements.txt
     #   dagster
-coverage==7.2.7
+coverage==7.3.2
     # via
     #   -r requirements.dev.in
     #   pytest-cov
-croniter==1.4.1
+croniter==2.0.1
     # via
     #   -c requirements.txt
     #   dagster
-dagit==1.3.14
+dagit==1.5.9
     # via -r requirements.dev.in
-dagster==1.3.14
+dagster==1.5.9
     # via
     #   -c requirements.txt
     #   dagster-graphql
     #   dagster-webserver
-dagster-graphql==1.3.14
+dagster-graphql==1.5.9
     # via dagster-webserver
-dagster-webserver==1.3.14
+dagster-pipes==1.5.9
+    # via
+    #   -c requirements.txt
+    #   dagster
+dagster-webserver==1.5.9
     # via dagit
 docstring-parser==0.15
     # via
@@ -67,19 +73,19 @@ docstring-parser==0.15
     #   dagster
 docutils==0.20.1
     # via readme-renderer
-exceptiongroup==1.1.2
+exceptiongroup==1.2.0
     # via
     #   anyio
     #   pytest
-flake8==6.0.0
+flake8==6.1.0
     # via -r requirements.dev.in
-fsspec==2023.6.0
+fsspec==2023.10.0
     # via
     #   -c requirements.txt
     #   universal-pathlib
-gql==3.4.1
+gql==3.4.0
     # via dagster-graphql
-graphene==3.2.2
+graphene==3.3
     # via dagster-graphql
 graphql-core==3.2.3
     # via
@@ -88,18 +94,18 @@ graphql-core==3.2.3
     #   graphql-relay
 graphql-relay==3.2.0
     # via graphene
-grpcio==1.56.0
+grpcio==1.59.3
     # via
     #   -c requirements.txt
     #   dagster
     #   grpcio-health-checking
-grpcio-health-checking==1.56.0
+grpcio-health-checking==1.59.3
     # via
     #   -c requirements.txt
     #   dagster
 h11==0.14.0
     # via uvicorn
-httptools==0.6.0
+httptools==0.6.1
     # via uvicorn
 humanfriendly==10.0
     # via
@@ -123,9 +129,9 @@ jinja2==3.1.2
     # via
     #   -c requirements.txt
     #   dagster
-keyring==24.2.0
+keyring==24.3.0
     # via twine
-mako==1.2.4
+mako==1.3.0
     # via
     #   -c requirements.txt
     #   alembic
@@ -140,13 +146,15 @@ mccabe==0.7.0
     # via flake8
 mdurl==0.1.2
     # via markdown-it-py
-more-itertools==9.1.0
+more-itertools==10.1.0
     # via jaraco-classes
 multidict==6.0.4
     # via yarl
 mypy-extensions==1.0.0
     # via black
-packaging==23.1
+nh3==0.2.14
+    # via readme-renderer
+packaging==23.2
     # via
     #   -c requirements.txt
     #   black
@@ -154,40 +162,44 @@ packaging==23.1
     #   dagster
     #   pytest
     #   setuptools-scm
-pathspec==0.11.1
+pathspec==0.11.2
     # via black
 pendulum==2.1.2
     # via
     #   -c requirements.txt
     #   dagster
-pip-tools==7.1.0
+pip-tools==7.3.0
     # via -r requirements.dev.in
 pkginfo==1.9.6
     # via twine
-platformdirs==3.9.1
+platformdirs==4.0.0
     # via black
-pluggy==1.2.0
+pluggy==1.3.0
     # via pytest
-protobuf==4.23.4
+protobuf==4.25.1
     # via
     #   -c requirements.txt
     #   dagster
     #   grpcio-health-checking
-pycodestyle==2.10.0
+pycodestyle==2.11.1
     # via flake8
-pydantic==1.10.11
+pydantic==2.5.2
     # via
     #   -c requirements.txt
     #   dagster
-pyflakes==3.0.1
+pydantic-core==2.14.5
+    # via
+    #   -c requirements.txt
+    #   pydantic
+pyflakes==3.1.0
     # via flake8
-pygments==2.15.1
+pygments==2.17.2
     # via
     #   readme-renderer
     #   rich
 pyproject-hooks==1.0.0
     # via build
-pytest==7.4.0
+pytest==7.4.3
     # via
     #   -r requirements.dev.in
     #   pytest-cov
@@ -204,9 +216,10 @@ python-dotenv==1.0.0
     #   -c requirements.txt
     #   dagster
     #   uvicorn
-pytz==2023.3
+pytz==2023.3.post1
     # via
     #   -c requirements.txt
+    #   croniter
     #   dagster
 pytzdata==2020.1
     # via
@@ -217,7 +230,7 @@ pyyaml==6.0.1
     #   -c requirements.txt
     #   dagster
     #   uvicorn
-readme-renderer==40.0
+readme-renderer==42.0
     # via twine
 requests==2.31.0
     # via
@@ -233,23 +246,22 @@ requests-toolbelt==0.10.1
     #   twine
 rfc3986==2.0.0
     # via twine
-rich==13.4.2
+rich==13.7.0
     # via twine
-setuptools-scm==7.1.0
+setuptools-scm==8.0.4
     # via -r requirements.dev.in
 six==1.16.0
     # via
     #   -c requirements.txt
-    #   bleach
     #   python-dateutil
 sniffio==1.3.0
     # via anyio
-sqlalchemy==2.0.19
+sqlalchemy==2.0.23
     # via
     #   -c requirements.txt
     #   alembic
     #   dagster
-starlette==0.30.0
+starlette==0.32.0.post1
     # via
     #   dagster-graphql
     #   dagster-webserver
@@ -272,59 +284,58 @@ toposort==1.10
     # via
     #   -c requirements.txt
     #   dagster
-tqdm==4.65.0
+tqdm==4.66.1
     # via
     #   -c requirements.txt
     #   dagster
 twine==4.0.2
     # via -r requirements.dev.in
-typing-extensions==4.7.1
+typing-extensions==4.8.0
     # via
     #   -c requirements.txt
     #   alembic
+    #   black
     #   dagster
     #   pydantic
+    #   pydantic-core
     #   setuptools-scm
     #   sqlalchemy
     #   uvicorn
-universal-pathlib==0.0.24
+universal-pathlib==0.1.4
     # via
     #   -c requirements.txt
     #   dagster
-urllib3==1.26.16
+urllib3==2.0.7
     # via
     #   -c requirements.txt
-    #   dagster-graphql
     #   gql
     #   requests
     #   twine
-uvicorn==0.23.1
+uvicorn==0.24.0.post1
     # via dagster-webserver
-uvloop==0.17.0
+uvloop==0.19.0
     # via uvicorn
 watchdog==3.0.0
     # via
     #   -c requirements.txt
     #   dagster
-watchfiles==0.19.0
+watchfiles==0.21.0
     # via uvicorn
-webencodings==0.5.1
-    # via bleach
-websockets==11.0.3
+websockets==12.0
     # via uvicorn
-wheel==0.40.0
+wheel==0.41.3
     # via pip-tools
-yarl==1.9.2
+yarl==1.9.3
     # via gql
-zipp==3.16.2
+zipp==3.17.0
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
-pip==23.2
+pip==23.3.1
     # via
     #   -r requirements.dev.in
     #   pip-tools
-setuptools==68.0.0
+setuptools==69.0.2
     # via
     #   -c requirements.txt
     #   -r requirements.dev.in

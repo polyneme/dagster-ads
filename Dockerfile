@@ -14,7 +14,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 
 
 # Install requirements
-WORKDIR /opt/dagster/app
+WORKDIR /opt/dagster
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
@@ -22,10 +22,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 RUN pip install --no-cache-dir --editable .
 
-# Run dagster gRPC server on port 4000
+# Set $DAGSTER_HOME and ensure dagster instance and workspace YAML there
+ENV DAGSTER_HOME=/opt/dagster
+COPY dagster.yaml workspace.yaml $DAGSTER_HOME
 
-EXPOSE 4000
-
-# CMD allows this to be overridden from run launchers or executors that want
-# to run other commands against your repository
-CMD ["dagster", "api", "grpc", "-h", "0.0.0.0", "-p", "4000", "-f", "dagster_ads/deployment.py"]
+WORKDIR $DAGSTER_HOME

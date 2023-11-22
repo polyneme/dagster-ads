@@ -1,0 +1,59 @@
+version: "3.7"
+
+services:
+
+  dagster_dagit:
+    build:
+      context: .
+    entrypoint:
+      - dagit
+      - -h
+      - "0.0.0.0"
+      - -p
+      - "3000"
+      - -w
+      - workspace.yaml
+    container_name: dagster_dagit
+    expose:
+      - "3000"
+    ports:
+      - "3000:3000"
+    environment:
+      DAGSTER_POSTGRES_USER: "postgres_user"
+      DAGSTER_POSTGRES_PASSWORD: "postgres_password"
+      DAGSTER_POSTGRES_DB: "postgres_db"
+    depends_on:
+      - dagster_postgresql
+
+  dagster_daemon:
+    build:
+      context: .
+    entrypoint:
+      - dagster-daemon
+      - run
+    container_name: dagster_daemon
+    restart: on-failure
+    environment:
+      DAGSTER_POSTGRES_USER: "postgres_user"
+      DAGSTER_POSTGRES_PASSWORD: "postgres_password"
+      DAGSTER_POSTGRES_DB: "postgres_db"
+      ADS_CONFIG_TOKEN: "$ADS_CONFIG_TOKEN"
+      AWS_REGION_NAME: "$AWS_REGION_NAME"
+      AWS_ENDPOINT_URL: "$AWS_ENDPOINT_URL"
+      AWS_ACCESS_KEY_ID: "$AWS_ACCESS_KEY_ID"
+      AWS_SECRET_ACCESS_KEY: "$AWS_SECRET_ACCESS_KEY"
+    depends_on:
+      - dagster_postgresql
+
+  dagster_postgresql:
+    image: postgres:11
+    container_name: dagster_postgresql
+    environment:
+      POSTGRES_USER: "postgres_user"
+      POSTGRES_PASSWORD: "postgres_password"
+      POSTGRES_DB: "postgres_db"
+    volumes:
+      - dagster_postgresql:/var/lib/postgresql/data
+
+volumes:
+  dagster_postgresql:
