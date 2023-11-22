@@ -16,13 +16,13 @@ from dagster import (
 
 from tenacity import wait_random_exponential, retry, retry_if_exception_type
 
-from dagster_ads.config import ADS_FIELDS
+from dagster_ads.config import ADS_FIELDS_ALL
 from dagster_ads.resources import ADSSearchQueryResource, DO_S3_Resource
 
 
 class ADSRecordsConfig(Config):
     query: str = "bibstem:AGUFM"
-    fields: list[str] = list(ADS_FIELDS)
+    fields: list[str] = list(ADS_FIELDS_ALL)
     rows: int = 2000  # Max supported by ADS API
     sort: str = "score desc,id desc"
     max_pages: int = 10_000  # Max supported by ADS API

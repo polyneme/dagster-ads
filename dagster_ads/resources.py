@@ -13,7 +13,7 @@ from dagster import (
 )
 from dagster_aws.s3 import S3Resource
 
-from dagster_ads.config import ADS_FIELDS
+from dagster_ads.config import ADS_FIELDS_ALL
 
 
 class ADSSearchQueryResource(ConfigurableResource):
@@ -36,7 +36,7 @@ class ADSSearchQueryResource(ConfigurableResource):
         if q is None:
             q = """database:astronomy year:1996-2010"""
         if fl is None:
-            fl = ADS_FIELDS
+            fl = ADS_FIELDS_ALL
 
         return ads.SearchQuery(q=q, fl=fl, rows=rows, max_pages=max_pages)
 
