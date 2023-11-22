@@ -75,7 +75,7 @@ def ads_records(
                     )
                     s3.get_client().put_object(
                         Bucket="polyneme",
-                        Key=f"ads/records/{starting_hour}/{quote_plus(query)}/{partition_bin_str}/page{page['number']:05}.ndjson.gz",
+                        Key=f"ads/records/{starting_hour}/{quote_plus(config.query)}/{partition_bin_str}/page{page['number']:05}.ndjson.gz",
                         Body=gzip.compress(output["handle"].getvalue()),
                         ACL="public-read",
                     )
@@ -88,7 +88,7 @@ def ads_records(
     fetch_pages()
     s3.get_client().put_object(
         Bucket="polyneme",
-        Key=f"ads/records/{starting_hour}/{quote_plus(query)}/{partition_bin_str}/page{page['number']:05}.ndjson.gz",
+        Key=f"ads/records/{starting_hour}/{quote_plus(config.query)}/{partition_bin_str}/page{page['number']:05}.ndjson.gz",
         Body=gzip.compress(output["handle"].getvalue()),
         ACL="public-read",
     )
